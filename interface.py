@@ -60,18 +60,18 @@ while True:
                     #Metodos AQUI
                     metodo_layout = [
                         [sg.Text("Escolha o método:")],
-                        [sg.Button("Gauss"), sg.Button("Gauss-Jordan"), sg.Button("Inversa")]
+                        [sg.Button("Eliminação de Gauss"), sg.Button("Eliminação de Gauss com pivoteamento parcial"), sg.Button("Inversa")]
                     ]
 
                     metodo_janela = sg.Window("Método de resolução", metodo_layout, modal=True)
                     evento_metodo, _ = metodo_janela.read()
                     metodo_janela.close()
 
-                    if evento_metodo == "Gauss":
+                    if evento_metodo == "Eliminação de Gauss":
                         resultado = msl.eliminacao_gauss(A, b)
                         
-                    elif evento_metodo == "Gauss-Jordan":
-                        continue
+                    elif evento_metodo == "Eliminação de Gauss com pivoteamento parcial":
+                        resultado = msl.pivoteamento_parcial(A,b)
                     elif evento_metodo == "Inversa":
                         continue
                     else:
