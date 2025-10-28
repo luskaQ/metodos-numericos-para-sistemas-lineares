@@ -97,7 +97,7 @@ def pivoteamento_completo(matrizA : np.ndarray, matrizB : np.ndarray):
         print(matrizAumentada)
 
     for i in range(n-1, -1, -1): #comeca em n-1 e vai ate -1 subtraindo
-        soma = matrizAumentada[i][-1]
+        soma = matrizAumentada[i][-1] #ultimo elementro da linha i (elementro de b)
         for j in range(i+1, n):
             soma = soma - (matrizAumentada[i][j] *x[j])
         x[i] = soma / matrizAumentada[i][i]
@@ -109,7 +109,7 @@ def pivoteamento_completo(matrizA : np.ndarray, matrizB : np.ndarray):
     return x_final
 
 def eliminacao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
-    matrizA = matrizA.astype(float)
+    #matrizA = matrizA.astype(float)
     if(np.linalg.det(matrizA) == 0):
         return "matriz sem solucao"
     n = len(matrizA)
@@ -126,10 +126,17 @@ def eliminacao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
             multiplicador =  matrizA[j][i] / pivo 
             matrizA[j] = matrizA[j] - multiplicador * matrizA[i]
             matrizL[j][i] = multiplicador
-    
-    print(matrizA)
-    print(matrizL)
-
+    y = np.zeros(n)
+    for i in range(n):
+        soma = matrizB[i]
+        for j in range(i): #j deve ir apenas ate i, para nao acessar y's nao calculados
+            soma -= matrizL[i][j] * y[j]
+        y[i] = soma / matrizL[i][i]
+    for i in range(n-1,-1,-1):
+        soma = y[i]
+        for j in range(i+1, n): #j deve ir apenas ate i, para nao acessar y's nao calculados
+            soma -= matrizA[i][j] * x[j] #matrizA é U
+        x[i] = soma / matrizA[i][i]
     
     return x
 
@@ -145,7 +152,7 @@ A = np.array([
     [3, 2, 4],
     [1, 1, 2],
     [4, 3, -2]
-])
+], dtype=float)
 
 B = np.array([1, 2, 3])
 print(eliminacao_LU(A,B))
