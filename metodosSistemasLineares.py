@@ -1,5 +1,5 @@
 import numpy as np
-
+import math
 def eliminacao_gauss(matrizA : np.ndarray, matrizB : np.ndarray):
     if(np.linalg.det(matrizA) == 0):
         return "matriz sem solucao"
@@ -108,10 +108,12 @@ def pivoteamento_completo(matrizA : np.ndarray, matrizB : np.ndarray):
     
     return x_final
 
-def eliminacao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
-    #matrizA = matrizA.astype(float)
-    if(np.linalg.det(matrizA) == 0):
-        return "matriz sem solucao"
+def fatoracao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
+    matrizA = matrizA.astype(float)
+    dets = det_submatrizes(matrizA)
+    for det in dets:
+        if det == 0:
+            return "Determinante de alguma submatriz igual a 0"
     n = len(matrizA)
     x = np.zeros(n)
     matrizL = np.zeros((n,n), dtype=float)
@@ -140,6 +142,40 @@ def eliminacao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
     
     return x
 
+def fatoracao_cholesky(matrizA : np.ndarray, matrizB : np.ndarray):
+    matrizA = matrizA.astype(float)
+    dets = det_submatrizes(matrizA)
+    n = len(matrizA)
+    x = np.zeros(n)
+    for det in dets:
+        if det <= 0:
+            return "Determinante de alguma submatriz menor ou igual a 0"
+    for i in range(n):
+        for j in range(i+1, n): #otimizacao para percorrer apenas diag superior
+            if(matrizA[i][j] != matrizA[j][i]):
+                 return "Matriz nao simetrica"
+    m = np.zeros((n,n), dtype=float)
+    
+    for i in range(n):
+        soma = sum(m[i][k] ** 2 for k in range(i)) #seguindo a formula do livro
+        m[i][i] = math.sqrt(matrizA[i][i] - soma)
+        for j in range(i+1, n):
+            soma = sum(m[i][k]*m[j][k] for k in range(i))
+            m[j][i] = (matrizA[j][i] - soma)/ m[i][i]
+    m_invertido = m.transpose()
+    y = np.zeros(n)
+    for i in range(n):
+        soma = matrizB[i]
+        for j in range(i): #j deve ir apenas ate i, para nao acessar y's nao calculados
+            soma -= m[i][j] * y[j]
+        y[i] = soma / m[i][i]
+    for i in range(n-1,-1,-1):
+        soma = y[i]
+        for j in range(i+1, n): #j deve ir apenas ate i, para nao acessar y's nao calculados
+            soma -= m_invertido[i][j] * x[j] #matrizA é U
+        x[i] = soma / m_invertido[i][i]
+    return x
+
 def det_submatrizes(matrizA : np.ndarray):
     n = matrizA.shape[0]
     lista_dets = []
@@ -147,16 +183,17 @@ def det_submatrizes(matrizA : np.ndarray):
         submatriz = matrizA[0:i , 0:i]
         lista_dets.append(np.linalg.det(submatriz))
     return lista_dets
-
+'''
 A = np.array([
-    [3, 2, 4],
-    [1, 1, 2],
-    [4, 3, -2]
+   [25, 15, -5],
+    [15, 18,  0],
+    [-5,  0, 11]
 ], dtype=float)
 
 B = np.array([1, 2, 3])
-print(eliminacao_LU(A,B))
-'''
+print(np.linalg.solve(A, B))
+print(fatoracao_cholesky(A,B))
+
 
 x = eliminacao_gauss(A, B)
 x2 = pivoteamento_parcial(A, B)

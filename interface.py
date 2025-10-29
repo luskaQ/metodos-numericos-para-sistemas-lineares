@@ -60,7 +60,10 @@ while True:
                     #Metodos AQUI
                     metodo_layout = [
                         [sg.Text("Escolha o método:")],
-                        [sg.Button("Eliminação de Gauss"), sg.Button("Eliminação de Gauss com pivoteamento parcial"), sg.Button("Inversa")]
+                        [sg.Button("Eliminação de Gauss"), sg.Button("Eliminação de Gauss com pivoteamento parcial"),
+                         sg.Button("Eliminação de Gauss com pivoteamento completo"),
+                         sg.Button("Fatoracao LU"),
+                         sg.Button("Fatoracao Cholesky")]
                     ]
 
                     metodo_janela = sg.Window("Método de resolução", metodo_layout, modal=True)
@@ -72,8 +75,12 @@ while True:
                         
                     elif evento_metodo == "Eliminação de Gauss com pivoteamento parcial":
                         resultado = msl.pivoteamento_parcial(A,b)
-                    elif evento_metodo == "Inversa":
-                        continue
+                    elif evento_metodo == "Eliminação de Gauss com pivoteamento completo":
+                        resultado = msl.pivoteamento_completo(A, b)
+                    elif evento_metodo == "Fatoracao LU":
+                        resultado = msl.fatoracao_LU(A, b)
+                    elif evento_metodo == "Fatoracao Cholesky":
+                        resultado = msl.fatoracao_cholesky(A, b)
                     else:
                         sg.popup_error("Nenhum método selecionado!")
                         continue
