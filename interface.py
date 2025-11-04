@@ -63,9 +63,11 @@ while True:
                         [sg.Button("Eliminação de Gauss"), sg.Button("Eliminação de Gauss com pivoteamento parcial"),
                          sg.Button("Eliminação de Gauss com pivoteamento completo"),
                          sg.Button("Fatoracao LU"),
-                         sg.Button("Fatoracao Cholesky")]
+                         sg.Button("Fatoracao Cholesky"),
+                         sg.Button("Gauss-Jacobi"),
+                         sg.Button("Gauss-Seidel")]
                     ]
-
+                    info_iter_layout = []
                     metodo_janela = sg.Window("Método de resolução", metodo_layout, modal=True)
                     evento_metodo, _ = metodo_janela.read()
                     metodo_janela.close()
@@ -81,6 +83,31 @@ while True:
                         resultado = msl.fatoracao_LU(A, b)
                     elif evento_metodo == "Fatoracao Cholesky":
                         resultado = msl.fatoracao_cholesky(A, b)
+                    elif evento_metodo == "Gauss-Jacobi":
+                        info_iter_layout = [
+                            [sg.Text("Vetor inicial (separe por ponto-vírgula):")],
+                            [sg.Input(key='x_inicial')],
+                            [sg.Text("Número máximo de iterações:")],
+                            [sg.Input(key='num_max_iter')],
+                            [sg.Text("Tolerância (delta):")],
+                            [sg.Input(key='delta')],
+                            [sg.Button("Confirmar"), sg.Button("Cancelar")]
+                        ]
+                        
+                        janela_info = sg.Window("Informações de Iteração", info_iter_layout, modal=True)
+                        evento_info, valores_info = janela_info.read()
+                        janela_info.close()
+
+                        if evento_info == "Confirmar":
+                            # Converte os valores
+                            x_inicial = [float(x) for x in valores_info['x_inicial'].split(';')]
+                            num_max_iter = int(valores_info['num_max_iter'])
+                            delta = float(valores_info['delta'])
+                            
+                            # Chama o método iterativo
+                            resultado = msl.gauss_jacobi(A, b, x_inicial, delta, num_max_iter)
+                                        #elif evento_metodo == "Gauss-Seidel":
+                                            #resultado = msl.g(A, b)
                     else:
                         sg.popup_error("Nenhum método selecionado!")
                         continue

@@ -179,8 +179,7 @@ def fatoracao_cholesky(matrizA : np.ndarray, matrizB : np.ndarray):
     return x
 
 
-def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta):
-    iteracoes = 1000
+def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteracoes):
     n = len(A)
     matrizes = list(permutations(A))
     matrizValida = True
@@ -226,9 +225,6 @@ def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta):
                 for p in range(n):
                     xk[p] = xk1[p]
 
-            
-    
-
 def parada_jacobi_seidel(matrizXK : np.ndarray, matrizXK1 : np.ndarray):
     matrizA : np.ndarray = matrizXK1 - matrizXK
     res_parada = max_vetor(matrizA) / max_vetor(matrizXK1)
@@ -241,7 +237,7 @@ def max_vetor(vetor : np.ndarray):
     for i in range(1, n):
         if(abs(vetor[i]) > max):
             max = abs(vetor[i])
-    return max
+    return max            
 
 def det_submatrizes(matrizA : np.ndarray):
     n = matrizA.shape[0]
