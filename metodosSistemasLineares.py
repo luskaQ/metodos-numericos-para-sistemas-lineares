@@ -1,5 +1,7 @@
 import numpy as np
 import math
+from itertools import permutations
+
 def eliminacao_gauss(matrizA : np.ndarray, matrizB : np.ndarray):
     if(np.linalg.det(matrizA) == 0):
         return "matriz sem solucao"
@@ -176,6 +178,71 @@ def fatoracao_cholesky(matrizA : np.ndarray, matrizB : np.ndarray):
         x[i] = soma / m_invertido[i][i]
     return x
 
+
+def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta):
+    iteracoes = 1000
+    n = len(A)
+    matrizes = list(permutations(A))
+    matrizValida = True
+    resultadosConvergencia = np.zeros(n)
+    xk1 : np.ndarray = np.zeros(n)
+
+    for matriz in matrizes:
+        matrizValida = True
+        for i in range(n):
+            for j in range(n):
+                if(j != i):
+                    resultadosConvergencia[i] = resultadosConvergencia[i] + matriz[i][j]
+
+            if(matriz[i][i] == 0):
+                matrizValida = False
+                break
+            resultadosConvergencia[i] = resultadosConvergencia[i] / matriz[i][i]
+
+        if(max_vetor(resultadosConvergencia) > 1.0):
+            matrizValida = False
+        if(matrizValida):
+            A = matriz
+            break
+    
+    if(not matrizValida):
+        print("nenhuma matriz que satisfaz o criterio de convergencia foi encontrada, portanto nao se pode assumir nada sobre o sistema")
+        return
+    else:
+        iteracao = 0
+        while iteracao < iteracoes:
+            for i in range(n):
+                x = b[i]
+                for j in range(n):
+                    if(j != i):
+                        x -= A[i][j] * xk[j]
+                x /= A[i][i]
+                xk1[i] = x
+            if(parada_jacobi_seidel(xk, xk1) < delta):
+                return xk1
+            else:
+                print(iteracao)
+                iteracao += 1
+                for p in range(n):
+                    xk[p] = xk1[p]
+
+            
+    
+
+def parada_jacobi_seidel(matrizXK : np.ndarray, matrizXK1 : np.ndarray):
+    matrizA : np.ndarray = matrizXK1 - matrizXK
+    res_parada = max_vetor(matrizA) / max_vetor(matrizXK1)
+    return res_parada
+
+
+def max_vetor(vetor : np.ndarray):
+    n = len(vetor)
+    max = abs(vetor[0])
+    for i in range(1, n):
+        if(abs(vetor[i]) > max):
+            max = abs(vetor[i])
+    return max
+
 def det_submatrizes(matrizA : np.ndarray):
     n = matrizA.shape[0]
     lista_dets = []
@@ -183,6 +250,7 @@ def det_submatrizes(matrizA : np.ndarray):
         submatriz = matrizA[0:i , 0:i]
         lista_dets.append(np.linalg.det(submatriz))
     return lista_dets
+
 '''
 A = np.array([
    [25, 15, -5],
@@ -198,4 +266,3 @@ print(fatoracao_cholesky(A,B))
 x = eliminacao_gauss(A, B)
 x2 = pivoteamento_parcial(A, B)
 print(x2)   '''
-
