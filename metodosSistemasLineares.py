@@ -184,9 +184,13 @@ def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
     matrizes = list(permutations(A))
     matrizValida = True
     resultadosConvergencia = np.zeros(n)
-    xk1 : np.ndarray = np.zeros(n)
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float)
+    xk = np.array(xk, dtype=float)
+    xk1 = np.array(np.zeros(n))
 
     for matriz in matrizes:
+        resultadosConvergencia = np.zeros(n)
         matrizValida = True
         for i in range(n):
             for j in range(n):
@@ -220,16 +224,64 @@ def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
             if(parada_jacobi_seidel(xk, xk1) < delta):
                 return xk1
             else:
-                print(iteracao)
                 iteracao += 1
-                for p in range(n):
-                    xk[p] = xk1[p]
+                xk = np.copy(xk1)
+
+def gauss_seidel(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteracoes):
+    n = len(A)
+    matrizes = list(permutations(A))
+    matrizValida = True
+    resultadosConvergencia = np.ones(n)
+    auxConvergencia = np.zeros(n)
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float)
+    xk = np.array(xk, dtype=float)
+    xk1 = np.copy(xk)
+
+    for matriz in matrizes:
+        auxConvergencia = np.zeros(n)
+        resultadosConvergencia = np.zeros(n)
+        matrizValida = True
+        for i in range(n):
+            for j in range(n):
+                if(j != i):
+                    auxConvergencia[i] = (auxConvergencia[i] + (abs(matriz[i][j]) * resultadosConvergencia[j]))
+            resultadosConvergencia[i] = auxConvergencia[i]
+
+            if(matriz[i][i] == 0):
+                matrizValida = False
+                break
+            resultadosConvergencia[i] = resultadosConvergencia[i] / abs(matriz[i][i])
+
+        if(max_vetor(resultadosConvergencia) > 1.0):
+            matrizValida = False
+        if(matrizValida):
+            A = matriz
+            break
+    
+    if(not matrizValida):
+        print("nenhuma matriz que satisfaz o criterio de convergencia foi encontrada, portanto nao se pode assumir nada sobre o sistema")
+        return
+    else:
+        iteracao = 0
+        while iteracao < iteracoes:
+            for i in range(n):
+                x = b[i]
+                for j in range(n):
+                    if(j != i):
+                        x -= A[i][j] * xk1[j]
+                x /= A[i][i]
+                xk1[i] = x
+            if(parada_jacobi_seidel(xk, xk1) < delta):
+                return xk1
+            else:
+                iteracao += 1
+                xk = np.copy(xk1)
 
 def parada_jacobi_seidel(matrizXK : np.ndarray, matrizXK1 : np.ndarray):
     matrizA : np.ndarray = matrizXK1 - matrizXK
     res_parada = max_vetor(matrizA) / max_vetor(matrizXK1)
     return res_parada
-
 
 def max_vetor(vetor : np.ndarray):
     n = len(vetor)
@@ -237,7 +289,7 @@ def max_vetor(vetor : np.ndarray):
     for i in range(1, n):
         if(abs(vetor[i]) > max):
             max = abs(vetor[i])
-    return max            
+    return max
 
 def det_submatrizes(matrizA : np.ndarray):
     n = matrizA.shape[0]
