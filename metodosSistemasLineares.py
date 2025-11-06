@@ -4,7 +4,7 @@ from itertools import permutations
 
 def eliminacao_gauss(matrizA : np.ndarray, matrizB : np.ndarray):
     if(np.linalg.det(matrizA) == 0):
-        return "matriz sem solucao"
+        raise Exception("Determinante da matriz igual a 0")
     n = len(matrizA)
     x = np.zeros(n)
     matrizAumentada = np.column_stack((matrizA, matrizB)) #concatena a matrizB em A como uma coluna
@@ -13,7 +13,7 @@ def eliminacao_gauss(matrizA : np.ndarray, matrizB : np.ndarray):
     for i in range(n):
         pivo = matrizAumentada[i][i] #pivo vai ser o elemento da diag principal
         if pivo == 0.0:
-            return "Divisao por 0"
+            raise Exception("Divisao por 0")
         for j in range(i+1, n):
             multiplicador =  matrizAumentada[j][i] / pivo 
             matrizAumentada[j] = matrizAumentada[j] - multiplicador * matrizAumentada[i]
@@ -29,7 +29,7 @@ def eliminacao_gauss(matrizA : np.ndarray, matrizB : np.ndarray):
 
 def pivoteamento_parcial(matrizA : np.ndarray, matrizB : np.ndarray):
     if(np.linalg.det(matrizA) == 0):
-        return "matriz sem solucao"
+        raise Exception("Determinante da matriz igual a 0")
     n = len(matrizA)
     x = np.zeros(n)
     matrizAumentada = np.column_stack((matrizA, matrizB)) #concatena a matrizB em A como uma coluna
@@ -115,7 +115,7 @@ def fatoracao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
     dets = det_submatrizes(matrizA)
     for det in dets:
         if det == 0:
-            return "Determinante de alguma submatriz igual a 0"
+            raise Exception("Determinante de alguma submatriz igual a 0")
     n = len(matrizA)
     x = np.zeros(n)
     matrizL = np.zeros((n,n), dtype=float)
@@ -125,7 +125,7 @@ def fatoracao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
     for i in range(n):
         pivo = matrizA[i][i] #pivo vai ser o elemento da diag principal
         if pivo == 0.0:
-            return "Divisao por 0"
+            raise Exception("Divisao por 0")
         for j in range(i+1, n):
             multiplicador =  matrizA[j][i] / pivo 
             matrizA[j] = matrizA[j] - multiplicador * matrizA[i]
@@ -151,11 +151,11 @@ def fatoracao_cholesky(matrizA : np.ndarray, matrizB : np.ndarray):
     x = np.zeros(n)
     for det in dets:
         if det <= 0:
-            return "Determinante de alguma submatriz menor ou igual a 0"
+            raise Exception("Determinante de alguma submatriz menor ou igual a 0")
     for i in range(n):
         for j in range(i+1, n): #otimizacao para percorrer apenas diag superior
             if(matrizA[i][j] != matrizA[j][i]):
-                 return "Matriz nao simetrica"
+                 raise Exception("Matriz nao simetrica")
     m = np.zeros((n,n), dtype=float)
     
     for i in range(n):
@@ -299,7 +299,7 @@ def det_submatrizes(matrizA : np.ndarray):
         lista_dets.append(np.linalg.det(submatriz))
     return lista_dets
 
-
+'''
 A = np.array([
    [25, 15, -5],
     [15, 18,  0],
@@ -310,3 +310,4 @@ B = np.array([1, 2, 3])
 x0 = np.zeros(len(A))
 print(eliminacao_gauss(A, B))
 print(gauss_jacobi(A, B, x0, 0.01, 1000))
+'''
