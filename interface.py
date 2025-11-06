@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import numpy as np
 import metodosSistemasLineares as msl
+import time
 sg.theme("DarkBlue14")
 
 def criar_layout_inicial():
@@ -70,18 +71,27 @@ while True:
                     metodo_janela = sg.Window("Método de resolução", metodo_layout, modal=True)
                     evento_metodo, _ = metodo_janela.read()
                     metodo_janela.close()
-
+                    n_iteracoes = -1
                     if evento_metodo == "Eliminação de Gauss":
+                        inicio_tempo = time.time()
                         resultado = msl.eliminacao_gauss(A, b)
-                        
+                        fim_tempo = time.time()
                     elif evento_metodo == "Eliminação de Gauss com pivoteamento parcial":
+                        inicio_tempo = time.time()
                         resultado = msl.pivoteamento_parcial(A,b)
+                        fim_tempo = time.time()
                     elif evento_metodo == "Eliminação de Gauss com pivoteamento completo":
+                        inicio_tempo = time.time()
                         resultado = msl.pivoteamento_completo(A, b)
+                        fim_tempo = time.time()
                     elif evento_metodo == "Fatoracao LU":
+                        inicio_tempo = time.time()
                         resultado = msl.fatoracao_LU(A, b)
+                        fim_tempo = time.time()
                     elif evento_metodo == "Fatoracao Cholesky":
+                        inicio_tempo = time.time()
                         resultado = msl.fatoracao_cholesky(A, b)
+                        fim_tempo = time.time()
                     elif evento_metodo == "Gauss-Jacobi":
                         info_iter_layout = [
                             [sg.Text("Vetor inicial (separe por ponto-vírgula):")],
@@ -104,7 +114,9 @@ while True:
                             if len(x_inicial) != len(A):
                                 sg.popup_error("x0 de tamanho diferente de A!")
                                 continue 
-                            resultado = msl.gauss_jacobi(A, b, x_inicial, delta, num_max_iter)
+                            inicio_tempo = time.time()
+                            resultado, n_iteracoes = msl.gauss_jacobi(A, b, x_inicial, delta, num_max_iter)
+                            fim_tempo = time.time()
                     elif evento_metodo == "Gauss-Seidel":
                         info_iter_layout = [
                             [sg.Text("Vetor inicial (separe por ponto-vírgula):")],
@@ -127,13 +139,20 @@ while True:
                             if len(x_inicial) != len(A):
                                 sg.popup_error("x0 de tamanho diferente de A!")
                                 continue
-                            resultado = msl.gauss_seidel(A, b, x_inicial, delta, num_max_iter)
+                            inicio_tempo = time.time()
+                            resultado, n_iteracoes = msl.gauss_seidel(A, b, x_inicial, delta, num_max_iter)
+                            fim_tempo = time.time()
                     else:
                         sg.popup_error("Nenhum método selecionado!")
                         continue
                     
                     resultado_str = "\n".join([f"x{i+1} = {resultado[i]:.4f}" for i in range(n)])
-                    sg.popup("Solução encontrada:", resultado_str)
+                    tempo_exec = fim_tempo - inicio_tempo
+                    if n_iteracoes == -1:
+                        sg.popup("Solução encontrada:", resultado_str, "Tempo de execucao (segundos): ", tempo_exec)
+                    else:
+                        sg.popup("Solução encontrada:", resultado_str, "Num de iteracoes: ", n_iteracoes, "Tempo de execucao (segundos): ", tempo_exec)
+
                     
                 except np.linalg.LinAlgError:
                     sg.popup_error("O sistema não possui solução única (matriz singular).")

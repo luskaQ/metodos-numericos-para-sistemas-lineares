@@ -222,7 +222,7 @@ def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
                 x /= A[i][i]
                 xk1[i] = x
             if(parada_jacobi_seidel(xk, xk1) < delta):
-                return xk1
+                return xk1, iteracao
             else:
                 iteracao += 1
                 xk = np.copy(xk1)
@@ -273,7 +273,7 @@ def gauss_seidel(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
                 x /= A[i][i]
                 xk1[i] = x
             if(parada_jacobi_seidel(xk, xk1) < delta):
-                return xk1
+                return xk1, iteracao
             else:
                 iteracao += 1
                 xk = np.copy(xk1)
