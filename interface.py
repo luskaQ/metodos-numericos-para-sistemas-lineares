@@ -57,7 +57,6 @@ while True:
                             A[i][j] = float(valores[f"A-{i}-{j}"])
                         b[i] = float(valores[f"B-{i}"])
                         
-                    #Metodos AQUI
                     metodo_layout = [
                         [sg.Text("Escolha o método:")],
                         [sg.Button("Eliminação de Gauss"), sg.Button("Eliminação de Gauss com pivoteamento parcial"),
@@ -99,15 +98,36 @@ while True:
                         janela_info.close()
 
                         if evento_info == "Confirmar":
-                            # Converte os valores
                             x_inicial = [float(x) for x in valores_info['x_inicial'].split(';')]
                             num_max_iter = int(valores_info['num_max_iter'])
                             delta = float(valores_info['delta'])
-                            
-                            # Chama o método iterativo
+                            if len(x_inicial) != len(A):
+                                sg.popup_error("x0 de tamanho diferente de A!")
+                                continue 
                             resultado = msl.gauss_jacobi(A, b, x_inicial, delta, num_max_iter)
-                                        #elif evento_metodo == "Gauss-Seidel":
-                                            #resultado = msl.g(A, b)
+                    elif evento_metodo == "Gauss-Seidel":
+                        info_iter_layout = [
+                            [sg.Text("Vetor inicial (separe por ponto-vírgula):")],
+                            [sg.Input(key='x_inicial')],
+                            [sg.Text("Número máximo de iterações:")],
+                            [sg.Input(key='num_max_iter')],
+                            [sg.Text("Tolerância (delta):")],
+                            [sg.Input(key='delta')],
+                            [sg.Button("Confirmar"), sg.Button("Cancelar")]
+                        ]
+                        
+                        janela_info = sg.Window("Informações de Iteração", info_iter_layout, modal=True)
+                        evento_info, valores_info = janela_info.read()
+                        janela_info.close()
+
+                        if evento_info == "Confirmar":
+                            x_inicial = [float(x) for x in valores_info['x_inicial'].split(';')]
+                            num_max_iter = int(valores_info['num_max_iter'])
+                            delta = float(valores_info['delta'])
+                            if len(x_inicial) != len(A):
+                                sg.popup_error("x0 de tamanho diferente de A!")
+                                continue
+                            resultado = msl.gauss_seidel(A, b, x_inicial, delta, num_max_iter)
                     else:
                         sg.popup_error("Nenhum método selecionado!")
                         continue

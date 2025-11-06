@@ -299,7 +299,7 @@ def det_submatrizes(matrizA : np.ndarray):
         lista_dets.append(np.linalg.det(submatriz))
     return lista_dets
 
-'''
+
 A = np.array([
    [25, 15, -5],
     [15, 18,  0],
@@ -307,10 +307,6 @@ A = np.array([
 ], dtype=float)
 
 B = np.array([1, 2, 3])
-print(np.linalg.solve(A, B))
-print(fatoracao_cholesky(A,B))
-
-
-x = eliminacao_gauss(A, B)
-x2 = pivoteamento_parcial(A, B)
-print(x2)   '''
+x0 = np.zeros(len(A))
+print(eliminacao_gauss(A, B))
+print(gauss_jacobi(A, B, x0, 0.01, 1000))
