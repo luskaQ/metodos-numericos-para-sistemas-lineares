@@ -4,6 +4,7 @@ import metodosSistemasLineares as msl
 import zerofuncoes as zf
 import converteDf
 import time
+from formatador import formatar_funcao
 sg.theme("DarkBlue14")
 
 def criar_layout_inicial():
@@ -199,9 +200,9 @@ while True:
             x1 = float(valores_zero['x1'])
             num_max_iter = int(valores_zero['iteracoes'])
             
-            #f_de_x = formatar_funcao(f_de_x)
-            #f_derivado = formatar_funcao(f_derivado)
-            #phi = formatar_funcao(phi)
+            f_de_x = formatar_funcao(f_de_x)
+            f_derivado = formatar_funcao(f_derivado)
+            phi = formatar_funcao(phi)
             
             zf.definir_expressoes(f_de_x, f_derivado, phi)
             xs_bissec = zf.bisseccao(a_intervalo, b_intervalo, precisao, num_max_iter)
