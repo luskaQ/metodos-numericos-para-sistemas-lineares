@@ -65,7 +65,7 @@ def pivoteamento_parcial(matrizA : np.ndarray, matrizB : np.ndarray):
 
 def pivoteamento_completo(matrizA : np.ndarray, matrizB : np.ndarray):
     if(np.linalg.det(matrizA) == 0):
-        return "matriz sem solucao"
+        raise Exception("matriz sem solucao")
     n = len(matrizA)
     x = np.zeros(n)
     matrizAumentada = np.column_stack((matrizA, matrizB)) #concatena a matrizB em A como uma coluna
@@ -92,7 +92,7 @@ def pivoteamento_completo(matrizA : np.ndarray, matrizB : np.ndarray):
         
         pivo = matrizAumentada[i][i] #pivo vai ser o elemento da diag principal apos pivoteamento
         if pivo == 0.0:
-            return "Divisao por 0"
+            raise Exception('Divisao por 0')
         for j in range(i+1, n):
             multiplicador =  matrizAumentada[j][i] / pivo 
             matrizAumentada[j] = matrizAumentada[j] - multiplicador * matrizAumentada[i]
@@ -111,11 +111,25 @@ def pivoteamento_completo(matrizA : np.ndarray, matrizB : np.ndarray):
     return x_final
 
 def fatoracao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
+    matrizes = list(permutations(matrizA))
     matrizA = matrizA.astype(float)
-    dets = det_submatrizes(matrizA)
-    for det in dets:
-        if det == 0:
-            raise Exception("Determinante de alguma submatriz igual a 0")
+    matrizB = matrizB.astype(float)
+    
+    for matriz in matrizes:
+        # descobrir quais linhas foram permutadas
+        indices = [np.where((matrizA == linha).all(axis=1))[0][0] for linha in matriz]
+
+        # aplicar mesma permutação a B
+        B_perm = matrizB[indices]
+
+        dets = det_submatrizes(matriz)
+
+        if all(det != 0 for det in dets):
+            matrizA = np.array(matriz, dtype=float)
+            matrizB = np.array(B_perm, dtype=float)
+            break
+    else:
+        raise Exception("Nenhuma matriz valida encontrada para resolver o sistema")               
     n = len(matrizA)
     x = np.zeros(n)
     matrizL = np.zeros((n,n), dtype=float)
@@ -209,8 +223,7 @@ def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
             break
     
     if(not matrizValida):
-        print("nenhuma matriz que satisfaz o criterio de convergencia foi encontrada, portanto nao se pode assumir nada sobre o sistema")
-        return
+        raise Exception("nenhuma matriz que satisfaz o criterio de convergencia foi encontrada, portanto nao se pode assumir nada sobre o sistema")
     else:
         iteracao = 0
         while iteracao < iteracoes:
@@ -260,8 +273,7 @@ def gauss_seidel(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
             break
     
     if(not matrizValida):
-        print("nenhuma matriz que satisfaz o criterio de convergencia foi encontrada, portanto nao se pode assumir nada sobre o sistema")
-        return
+        raise Exception("nenhuma matriz que satisfaz o criterio de convergencia foi encontrada, portanto nao se pode assumir nada sobre o sistema")
     else:
         iteracao = 0
         while iteracao < iteracoes:

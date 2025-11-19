@@ -27,6 +27,7 @@ def converte(xs_bissec, xs_mil, xs_newton, xs_secante, xs_regula):
     }
 
     df = pd.DataFrame(dados)
-    
+    nome_arquivo = "resultados.csv"
+    df.to_csv(nome_arquivo, index=False)
     return df
   
