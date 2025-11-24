@@ -67,6 +67,3 @@ def formatar_funcao(expressao : str):
     expressao = expressao.replace(" ", "")
 
     return expressao
-
-expressao = formatar_funcao("log(6)")
-print(expressao)
