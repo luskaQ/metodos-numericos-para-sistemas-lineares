@@ -11,9 +11,15 @@ def eliminacao_gauss(matrizA : np.ndarray, matrizB : np.ndarray):
     matrizAumentada = matrizAumentada.astype(float) # se certificando q a nova matriz é do tipo float
     #zerar elementos abaixo da diagonal principal
     for i in range(n):
-        pivo = matrizAumentada[i][i] #pivo vai ser o elemento da diag principal
-        if pivo == 0.0:
-            raise Exception("Divisao por 0")
+        pivo = matrizAumentada[i][i] 
+        if pivo == 0:
+            for k in range(i+1, n):
+                if matrizAumentada[k][i] != 0:
+                    matrizAumentada[[i, k]] = matrizAumentada[[k, i]]
+                    pivo = matrizAumentada[i][i]
+                    break
+            else:
+                raise Exception("Sistema sem solução única (pivô zero)")
         for j in range(i+1, n):
             multiplicador =  matrizAumentada[j][i] / pivo 
             matrizAumentada[j] = matrizAumentada[j] - multiplicador * matrizAumentada[i]
@@ -194,7 +200,8 @@ def fatoracao_cholesky(matrizA : np.ndarray, matrizB : np.ndarray):
 
 def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteracoes):
     n = len(A)
-    matrizes = list(permutations(A))
+    matrizAumentada = np.column_stack((A, b))
+    matrizes = list(permutations(matrizAumentada))
     matrizValida = True
     resultadosConvergencia = np.zeros(n)
     A = np.array(A, dtype=float)
@@ -203,6 +210,7 @@ def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
     xk1 = np.array(np.zeros(n))
 
     for matriz in matrizes:
+        matriz = np.array(matriz, dtype=float)
         resultadosConvergencia = np.zeros(n)
         matrizValida = True
         for i in range(n):
@@ -218,7 +226,8 @@ def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
         if(max_vetor(resultadosConvergencia) > 1.0):
             matrizValida = False
         if(matrizValida):
-            A = matriz
+            A = matriz[:, :-1]
+            b = matriz[:, -1]
             break
     
     if(not matrizValida):
@@ -241,7 +250,8 @@ def gauss_jacobi(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
 
 def gauss_seidel(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteracoes):
     n = len(A)
-    matrizes = list(permutations(A))
+    matrizAumentada = np.column_stack((A, b))
+    matrizes = list(permutations(matrizAumentada))
     matrizValida = True
     resultadosConvergencia = np.ones(n)
     auxConvergencia = np.zeros(n)
@@ -251,8 +261,9 @@ def gauss_seidel(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
     xk1 = np.copy(xk)
 
     for matriz in matrizes:
+        matriz = np.array(matriz, dtype=float)
         auxConvergencia = np.zeros(n)
-        resultadosConvergencia = np.zeros(n)
+        resultadosConvergencia = np.ones(n)
         matrizValida = True
         for i in range(n):
             for j in range(n):
@@ -268,7 +279,8 @@ def gauss_seidel(A : np.ndarray, b : np.ndarray, xk : np.ndarray, delta, iteraco
         if(max_vetor(resultadosConvergencia) > 1.0):
             matrizValida = False
         if(matrizValida):
-            A = matriz
+            A = matriz[:, :-1]
+            b = matriz[:, -1]
             break
     
     if(not matrizValida):
@@ -312,13 +324,13 @@ def det_submatrizes(matrizA : np.ndarray):
 
 '''
 A = np.array([
-   [25, 15, -5],
-    [15, 18,  0],
-    [-5,  0, 11]
+   [1, 5, 1],
+    [10, 2,  1],
+    [2,  3, 10]
 ], dtype=float)
 
-B = np.array([1, 2, 3])
+B = np.array([11, 14, 8])
 x0 = np.zeros(len(A))
-print(eliminacao_gauss(A, B))
-print(gauss_jacobi(A, B, x0, 0.01, 1000))
+#print(eliminacao_gauss(A, B))
+print(gauss_seidel(A, B, x0, 0.01, 1000))
 '''
