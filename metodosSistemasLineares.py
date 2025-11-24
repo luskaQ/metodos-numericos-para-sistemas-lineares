@@ -86,7 +86,7 @@ def pivoteamento_completo(matrizA : np.ndarray, matrizB : np.ndarray):
             aux = matrizAumentada[i].copy()
             matrizAumentada[i] = matrizAumentada[linha_pivo].copy()
             matrizAumentada[linha_pivo] = aux
-        if coluna_pivo != i: #se o pivo estiver em uma linha diferente da diag principal atual, temos que trocar de linhas
+        if coluna_pivo != i: 
             matrizAumentada[:, [i, coluna_pivo]] = matrizAumentada[:, [coluna_pivo, i]]
             trocaColunas[[i, coluna_pivo]] = trocaColunas[[coluna_pivo, i]]
         
@@ -110,26 +110,25 @@ def pivoteamento_completo(matrizA : np.ndarray, matrizB : np.ndarray):
     
     return x_final
 
-def fatoracao_LU(matrizA : np.ndarray, matrizB : np.ndarray):
-    matrizes = list(permutations(matrizA))
-    matrizA = matrizA.astype(float)
-    matrizB = matrizB.astype(float)
-    
-    for matriz in matrizes:
-        # descobrir quais linhas foram permutadas
-        indices = [np.where((matrizA == linha).all(axis=1))[0][0] for linha in matriz]
+def fatoracao_LU(A: np.ndarray, B: np.ndarray):
+    if(np.linalg.det(A) == 0):
+        raise Exception("matriz sem solucao")
+    AB = np.hstack((A.astype(float), B.reshape(-1,1).astype(float)))
 
-        # aplicar mesma permutação a B
-        B_perm = matrizB[indices]
+    for perm in permutations(AB):
+        perm = np.array(perm, dtype=float)
 
-        dets = det_submatrizes(matriz)
+        A_perm = perm[:, :-1].astype(float) 
+        B_perm = perm[:, -1] .astype(float) 
+
+        dets = det_submatrizes(A_perm)
 
         if all(det != 0 for det in dets):
-            matrizA = np.array(matriz, dtype=float)
-            matrizB = np.array(B_perm, dtype=float)
+            matrizA = A_perm.copy().astype(float)
+            matrizB = B_perm.copy().astype(float)
             break
     else:
-        raise Exception("Nenhuma matriz valida encontrada para resolver o sistema")               
+        raise Exception("Nenhuma matriz válida encontrada")              
     n = len(matrizA)
     x = np.zeros(n)
     matrizL = np.zeros((n,n), dtype=float)
@@ -182,7 +181,7 @@ def fatoracao_cholesky(matrizA : np.ndarray, matrizB : np.ndarray):
     y = np.zeros(n)
     for i in range(n):
         soma = matrizB[i]
-        for j in range(i): #j deve ir apenas ate i, para nao acessar y's nao calculados
+        for j in range(i): 
             soma -= m[i][j] * y[j]
         y[i] = soma / m[i][i]
     for i in range(n-1,-1,-1):
