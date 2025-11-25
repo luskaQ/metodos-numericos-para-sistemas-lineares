@@ -50,7 +50,7 @@ def mil(x,precisao, n):
         raiz = x
         xs_mil.append(x)
     else:
-        while(fabs(f(x)) > precisao or fabs(x_ant-x) > precisao and k < n):
+        while ( (fabs(f(x)) > precisao or fabs(x_ant - x) > precisao) and k < n):
             x_ant = x
             x = phi(x)
             k+= 1
@@ -151,4 +151,24 @@ def regulaFalsi(a, b, precisao, n):
     return xs_regulaFalsi
                     
             
-  
+def checar_continuidade_intervalo(a, b, n=2000):
+    pontos = [a + i*(b-a)/n for i in range(n+1)]
+    valores = []
+    for x in pontos:
+        try:
+            y = phi(x)
+
+            if isnan(y) or isinf(y):
+                return False
+
+            valores.append(y)
+
+        except Exception as e:
+            return False
+
+    for i in range(1, len(valores)):
+        if abs(valores[i] - valores[i-1]) > 1e6:
+            return False
+
+    return True
+

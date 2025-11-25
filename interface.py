@@ -206,6 +206,11 @@ while True:
             
             zf.definir_expressoes(f_de_x, f_derivado, phi)
             xs_bissec = zf.bisseccao(a_intervalo, b_intervalo, precisao, num_max_iter)
+            if not zf.checar_continuidade_intervalo(a_intervalo, b_intervalo):
+                try:
+                    raise Exception("funcao phi nao continua no intervalo")
+                except Exception:
+                    sg.popup_error(f"funcao phi nao continua no intervalo")
             xs_mil = zf.mil(x0, precisao, num_max_iter)
             xs_newton = zf.newton(x0, precisao, num_max_iter)
             xs_secante = zf.secante(x0, x1, precisao, num_max_iter)
