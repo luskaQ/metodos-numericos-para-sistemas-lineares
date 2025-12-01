@@ -212,7 +212,7 @@ while True:
                 except Exception:
                     sg.popup_error(f"funcao phi nao continua no intervalo")
             xs_mil = zf.mil(x0, precisao, num_max_iter)
-            xs_newton = zf.newton(x0, precisao, num_max_iter)
+            xs_newton = zf.newton((x0+x1)/2, precisao, num_max_iter)
             xs_secante = zf.secante(x0, x1, precisao, num_max_iter)
             xs_regulaFalsi = zf.regulaFalsi(a_intervalo, b_intervalo, precisao, num_max_iter)
             print("dei erro no df")
